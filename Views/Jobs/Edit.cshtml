@@ -1,0 +1,90 @@
+﻿@model Jobs.ViewModels.JobCreateViewModel
+
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Job</h4>
+<hr />
+<div class="row">
+    <div class="alert alert-danger" id="error-div" style="display:none">
+        <span id="view-err">
+
+        </span>
+    </div>
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Photo" />
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <input asp-for="Content" class="form-control" />
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Photo" class="control-label"></label>
+                <input asp-for="Photo" type="file" id="myImage" />
+                <span asp-validation-for="Photo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" id="save" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $("#save").click(function () {
+
+                //Check if the input is Empty
+                //if ($("#JobImage").val() == "") {
+                //    $("#error-div").fadeIn();
+                //    $("#view-err").append("رجاء قم باختيار صورة");
+                //    return false;
+                //}
+
+                if ($("#myImage").val() != "") {
+                    //Check if the Image extension is valid
+                    var filename = document.getElementById("myImage").value;
+                    var extensionImg = filename.substr(filename.lastIndexOf('.') + 1);
+                    var validExtensions = ['jpg', 'png', 'gif', 'bmp'];
+                    if ($.inArray(extensionImg, validExtensions) == -1) {
+                        $("#error-div").fadeIn();
+                        $("#view-err").append("رجاء قم باختيار صورة بامتداد صحيح");
+                        return false;
+                    }
+
+                    //Check if the Image Size is valid (5 mb)
+                    var myFileSize = document.getElementById("myImage").files[0].size / 1024 / 1024;
+
+                    if (myFileSize > 5) {
+                        $("#error-div").fadeIn();
+                        $("#view-err").append("رجاء قم باختيار صورة حجمها أقل من 5 ميغا بايت");
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
+
+}

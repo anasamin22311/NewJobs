@@ -1,0 +1,56 @@
+﻿@model IEnumerable<Jobs.Models.Job>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>قائمة الوظائف</h1>
+
+<p>
+    <a asp-action="Create">إضافة وظيفة جديدة</a>
+</p>
+<table class="table table-stripped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Category.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Content)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Image)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Content)
+                </td>
+                <td>
+                    <img src="~/images/@Html.DisplayFor(model=>item.Image)"
+                     class="thumbnail" style="width:48px; height:48px" />
+                </td>
+                
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">تعديل</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">تفاصيل</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">حذف</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
