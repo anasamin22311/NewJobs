@@ -10,44 +10,49 @@ using Jobs.Models;
 using Microsoft.AspNetCore.Hosting;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Jobs.ViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace Jobs.Controllers
 {
     public class JobsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+
         private readonly IHostEnvironment HostEnvironment;
-        public JobsController(ApplicationDbContext context, IHostEnvironment hostingEnvironment)
-        {
+        public JobsController(ApplicationDbContext context, IHostEnvironment hostingEnvironment, UserManager<ApplicationUser> userManager)
+        { 
             _context = context;
             this.HostEnvironment = hostingEnvironment;
+            _userManager = userManager;
         }
         // GET: Jobs
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Job.Include(j => j.Category);
-            return View(await applicationDbContext.ToListAsync());
+            var applicationDbContext = await _context.Jobs?.Where(x => x != null).ToListAsync();
+            return View(applicationDbContext);
         }
         // GET: Jobs/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Job == null)
+            if (id == null || _context.Jobs == null)
             {
                 return NotFound();
             }
-            var job = await _context.Job
+            var job = await _context.Jobs
                 .Include(j => j.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (job == null)
             {
                 return NotFound();
             }
+            
             return View(job);
         }
         // GET: Jobs/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Description");
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Description");
             return View();
         }
         // POST: Jobs/Create
@@ -78,9 +83,10 @@ namespace Jobs.Controllers
                     Content = model.Content,
                     Title = model.Title,
                     CategoryId = model.CategoryId,
-                    Image = uniqueFileName
+                    UserId= _userManager.GetUserId(User),
+                Image = uniqueFileName
                 };
-                var newJob = await _context.Job.AddAsync(job);
+                var newJob = await _context.Jobs.AddAsync(job);
                 if (newJob.Entity != null)
                 {
                     int x = await _context.SaveChangesAsync();
@@ -89,18 +95,20 @@ namespace Jobs.Controllers
                     }
                 }
             }
-            ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Description", model.CategoryId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Description", model.CategoryId);
             return View(model);
         }
+
+      
         // GET: Jobs/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Job == null)
+            if (id == null || _context.Jobs == null)
             {
                 return NotFound();
             }
             
-            var job = await _context.Job.FindAsync(id);
+            var job = await _context.Jobs.FindAsync(id);
             if (job == null)
             {
                 return NotFound();
@@ -115,15 +123,14 @@ namespace Jobs.Controllers
             };
 
 
-
-
             string path = Path.Combine(HostEnvironment.ContentRootPath, "images", job.Image);
-            ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Description", job.CategoryId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Description", job.CategoryId);
             return View(model);
         }
         // POST: Jobs/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Content,Photo,CategoryId")] JobCreateViewModel model)
@@ -141,7 +148,7 @@ namespace Jobs.Controllers
                     System.IO.File.Delete(oldPath);
                     string path = Path.Combine(HostEnvironment.ContentRootPath, "images", model.Photo.FileName);
                     model.Photo.CopyTo(new FileStream(path, FileMode.Create));
-                    var job = await _context.Job
+                    var job = await _context.Jobs
                 .FirstOrDefaultAsync(m => m.Id == id);
             try
             {
@@ -172,17 +179,17 @@ namespace Jobs.Controllers
                     }
             return RedirectToAction(nameof(Index));
         }
-        ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Description", model.CategoryId);
+        ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Description", model.CategoryId);
             return View(model);
     } 
         // GET: Jobs/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Job == null)
+            if (id == null || _context.Jobs == null)
             {
                 return NotFound();
             }
-            var job = await _context.Job
+            var job = await _context.Jobs
                 .Include(j => j.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (job == null)
@@ -196,14 +203,14 @@ namespace Jobs.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Job == null)
+            if (_context.Jobs == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Job'  is null.");
             }
-            var job = await _context.Job.FindAsync(id);
+            var job = await _context.Jobs.FindAsync(id);
             if (job != null)
             {
-                _context.Job.Remove(job);
+                _context.Jobs.Remove(job);
             }
 
             await _context.SaveChangesAsync();
@@ -211,7 +218,7 @@ namespace Jobs.Controllers
         }
         private bool JobExists(int id)
         {
-            return _context.Job.Any(e => e.Id == id);
+            return _context.Jobs.Any(e => e.Id == id);
         }
     }
 }

@@ -1,0 +1,39 @@
+﻿@model ICollection<Jobs.ViewModels.JobViewModel>
+
+@{
+    ViewData["Title"] = "Jobs Applications";
+}
+
+@foreach (var model in Model)
+{
+    <h3>@(model.Title)</h3>
+    <table class="table table-bordered table-hover ">
+        <tr>
+            <th>
+                إسم الباحث
+            </th>
+            <th>
+                نص الرسالة
+            </th>
+            <th>
+                تاريخ الإرسال
+            </th>
+
+        </tr>
+        @foreach (var jobApplication in model.JobApplications)
+        {
+            <tr>
+                <td>
+                    @jobApplication.user.UserName
+                </td>
+                <td>
+                    @jobApplication.Message
+                </td>
+                <td>
+                    @jobApplication.ApplyDate
+                </td>
+
+            </tr>
+        }
+    </table>
+}

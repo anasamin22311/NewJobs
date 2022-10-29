@@ -1,16 +1,28 @@
-﻿using Jobs.Models;
+﻿using Jobs.Data;
+using Jobs.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
+using static System.Net.WebRequestMethods;
 
 namespace Jobs.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger)
+
+        private readonly ApplicationDbContext _context;
+
+        public HomeController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
+            _context = context;
             _logger = logger;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -22,6 +34,7 @@ namespace Jobs.Controllers
         {
             return View();
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Jobs.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Jobs.Models;
-using Jobs.ViewModels;
 
 namespace Jobs.Data
 {
@@ -11,7 +10,20 @@ namespace Jobs.Data
             : base(options)
         {
         }
-        public DbSet<Jobs.Models.Category> Category { get; set; }
-        public DbSet<Jobs.Models.Job> Job { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Job>()
+                        .HasOne(j => j.User)
+                        .WithMany(u => u.Jobs)
+                        .HasForeignKey(j => j.UserId)
+                        .OnDelete(DeleteBehavior.Restrict);
+            base.OnModelCreating(modelBuilder);
+        }
+
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Job> Jobs { get; set; }
+        public DbSet<ApplytForJob> ApplytForJobs { get; set; }
     }
 }

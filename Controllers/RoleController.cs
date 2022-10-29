@@ -8,15 +8,16 @@ using Microsoft.EntityFrameworkCore;
 using Jobs.Data;
 using Jobs.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using Jobs.Models;
 
 namespace Jobs.Controllers
 {
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> roleManager;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
+        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;

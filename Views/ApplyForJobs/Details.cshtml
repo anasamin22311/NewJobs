@@ -1,4 +1,4 @@
-﻿@model Jobs.Models.Job
+﻿@model Jobs.Models.ApplytForJob
 
 @{
     ViewData["Title"] = "Details";
@@ -7,37 +7,36 @@
 <h1>Details</h1>
 
 <div>
-    <h4>Job</h4>
+    <h4>ApplytForJob</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
+            @Html.DisplayNameFor(model => model.Message)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
+            @Html.DisplayFor(model => model.Message)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Content)
+            @Html.DisplayNameFor(model => model.ApplyDate)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Content)
+            @Html.DisplayFor(model => model.ApplyDate)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Image)
+            @Html.DisplayNameFor(model => model.user)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Image)
+            @Html.DisplayFor(model => model.user.Id)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
+            @Html.DisplayNameFor(model => model.job)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category.Description)
+            @Html.DisplayFor(model => model.job.Id)
         </dd>
     </dl>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-controller="ApplyForJobs" asp-action="Apply" asp-route-id="@Model?.Id">Apply</a> |
     <a asp-action="Index">Back to List</a>
 </div>
