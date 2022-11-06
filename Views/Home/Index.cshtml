@@ -17,7 +17,7 @@
 
         <div class="row panel-body">
             <h5>@Html.DisplayFor(modelItem => item.Description)</h5>
-            @if(item.Jobs==null)
+            @if (item.Jobs == null)
             {
                 continue;
             }
@@ -25,18 +25,18 @@
             {
 
 
-            @foreach (var subItem in item.Jobs)
-            {
-                <div class="col-md-3 thumbnail" style="margin-left:20px; margin-bottom:30px; min-height:380px;">
+                @foreach (var subItem in item.Jobs)
+                {
+                    <div class="col-md-3 thumbnail" style="margin-left:20px; margin-bottom:30px; min-height:380px;">
                         @*<img src="~/images/@Html.DisplayFor(model=>item.Image)"
-                 class="thumbnail" style="width:48px; height:48px" />*@
-                    <img src="~/images/@subItem.Image" />
-                    <h3>@Html.DisplayFor(modelItem => subItem.Title)</h3>
-                    <h3>@Html.DisplayFor(modelItem => subItem.Content)</h3>
-                    @*<h5>@Html.Raw(HttpUtility.HtmlDecode(Html.DisplayFor(modelItem => subItem.Content).ToString()))</h5>*@
+            class="thumbnail" style="width:48px; height:48px" />*@
+                        <img src="~/images/@subItem.Image" />
+                        <h3>@Html.DisplayFor(modelItem => subItem.Title)</h3>
+                        <h5>@Html.DisplayFor(modelItem => subItem.Content)</h5>
+                            @*@Html.Raw(System.Net.WebUtility.HtmlDecode(blablabla.ToString()))*@
                         <a asp-controller="Jobs" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">تفاصيل</a>
-                </div>
-            }
+                    </div>
+                }
             }
         </div>
     </div>
