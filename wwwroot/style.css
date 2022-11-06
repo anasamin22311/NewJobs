@@ -109,7 +109,7 @@ body{
     text-decoration: auto;
     display: block;
     font-size: 17px;
-    margin: 4px 411px 4px -299px;
+    margin: 4px -144px 4px 2px;
 }
 .login {
 }
@@ -123,6 +123,11 @@ body{
     text-decoration: auto;
     display: block;
     font-size: 17px;
-    margin: 4px 293px -3px -446px;
+    margin: 4px 0px -3px -85px;
+}
+.navbar-user {
+    padding: 10px;
+    padding-bottom: 0px;
+    width: 350px;
 }
 

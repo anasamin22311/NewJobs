@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Jobs.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using System.IO;
 
 namespace Jobs.Controllers
 {
@@ -19,8 +20,8 @@ namespace Jobs.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        private readonly IHostEnvironment HostEnvironment;
-        public JobsController(ApplicationDbContext context, IHostEnvironment hostingEnvironment, UserManager<ApplicationUser> userManager)
+        private readonly IWebHostEnvironment HostEnvironment;
+        public JobsController(ApplicationDbContext context, IWebHostEnvironment hostingEnvironment, UserManager<ApplicationUser> userManager)
         { 
             _context = context;
             this.HostEnvironment = hostingEnvironment;
@@ -67,10 +68,16 @@ namespace Jobs.Controllers
                 string uniqueFileName = null;
                 if (model.Photo != null)
                 {
-                    string uploadsFolder = Path.Combine(HostEnvironment.ContentRootPath, "images");
+                    string uploadsFolder = Path.Combine(HostEnvironment.WebRootPath, "images");
                     uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
                     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    model.Photo.CopyTo(new FileStream(filePath, FileMode.Create));
+
+                    MemoryStream memoryStream = new();
+                    await model.Photo.OpenReadStream().CopyToAsync(memoryStream);
+                    await using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                    {
+                        memoryStream.WriteTo(fs);
+                    }
                     //using (var fileStream = new FileStream(filePath, FileMode.Create))
                     //{
                     //    model.Photo.CopyTo(new FileStream(filePath,FileMode.Create));

@@ -25,5 +25,6 @@ namespace Jobs.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Job> Jobs { get; set; }
         public DbSet<ApplytForJob> ApplytForJobs { get; set; }
+        public DbSet<Jobs.Models.Contact> Contact { get; set; }
     }
 }

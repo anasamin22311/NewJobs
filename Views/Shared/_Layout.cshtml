@@ -40,7 +40,7 @@
                     </li>
 
                     <li>
-                        <a href="~/Home/Contact">
+                        <a asp-controller="Home" asp-action="Contact" >
                             <i class="glyphicon glyphicon-envelope"></i>
                             اتصل بنا
                         </a>
@@ -60,7 +60,7 @@
 
                 <!--Partial Login-->
                 <div class="login">
-                @Html.Partial("_LoginPartial")
+                @Html.Partial("_LogIn")
                 </div>
 
             </div>

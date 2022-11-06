@@ -48,12 +48,12 @@ namespace Jobs.Controllers
             //applytForJob.JobId = JobID;
             //applytForJob.Message = Message;
             var check = await _context.ApplytForJobs.Where(a => a.JobId == ApplytForJob.JobId && a.UserId == ApplytForJob.UserId).ToListAsync();
-            if (check.Count > 0)
+            if (check.Count == 0)
             {
 
 
                 var newApplytForJob = await _context.ApplytForJobs.AddAsync(ApplytForJob);
-                if (newApplytForJob != null)
+                    if (newApplytForJob != null)
                 {
                     var result = await _context.SaveChangesAsync();
                     if (result != 0)

@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Jobs.Areas.Identity.Pages.Account
@@ -56,7 +57,7 @@ namespace Jobs.Areas.Identity.Pages.Account
             _logger = logger;
             ;
         }
-        
+
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -122,18 +123,56 @@ namespace Jobs.Areas.Identity.Pages.Account
             [Display(Name = "نوع الحساب")]
             public string UserType { get; set; }
         }
+        public class EditProfile
+        {
+            /// <summary>
+            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+            ///     directly from your code. This API may change or be removed in future releases.
+            /// </summary>
+            /// 
+            [Required]
+            [Display(Name = "الإسم")]
+            public string Name { get; set; }
+
+            [Required]
+            [EmailAddress]
+            [Display(Name = "البريد الإلكتروني")]
+            public string Email { get; set; }
+
+            /// <summary>
+            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+            ///     directly from your code. This API may change or be removed in future releases.
+            /// </summary>
+            [Required]
+            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [DataType(DataType.Password)]
+            [Display(Name = "كلمة المرور الحالية")]
+            public string CurrentPassword { get; set; }
+            [Required]
+            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [DataType(DataType.Password)]
+            [Display(Name = "كلمة المرور الجديدة")]
+            public string NewPassword { get; set; }
+
+            /// <summary>
+            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+            ///     directly from your code. This API may change or be removed in future releases.
+            /// </summary>
+            [DataType(DataType.Password)]
+            [Display(Name = "تأكيد كلمة المرور الجديدة")]
+            [Compare("NewPassword", ErrorMessage = "لا يوجد تطابق")]
+            public string ConfirmPassword { get; set; }
 
 
-
-
+        }
         public async Task OnGetAsync(string returnUrl = null)
         {
-            
+
             Roles = _roleManager.Roles.Where(x => x != null).ToList().Select(x => x.Name).ToList();
             ViewData["Roles"] = _roleManager.Roles.ToList();
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            
+
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -149,38 +188,44 @@ namespace Jobs.Areas.Identity.Pages.Account
                 // Delete this
                 user.EmailConfirmed = true;
                 // Delete this
-
-                await _userStore.SetUserNameAsync(user, Input.Name, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                var result = await _userManager.CreateAsync(user, Input.Password);
-
-                if (result.Succeeded)
+                if (await _userManager.FindByEmailAsync(Input.Email) == null)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    await _userStore.SetUserNameAsync(user, Input.Name, CancellationToken.None);
+                    await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                    var result = await _userManager.CreateAsync(user, Input.Password);
 
-                    var userId = await _userManager.GetUserIdAsync(user);
-
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    //var callbackUrl = Url.Page(
-                    //    "/Account/ConfirmEmail",
-                    //    pageHandler: null,
-                    //    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                    //    protocol: Request.Scheme);
-
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                    if (result.Succeeded)
                     {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                        _logger.LogInformation("User created a new account with password.");
+
+                        var userId = await _userManager.GetUserIdAsync(user);
+                        await _userManager.AddToRoleAsync(user, Input.UserType);
+                        //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        //var callbackUrl = Url.Page(
+                        //    "/Account/ConfirmEmail",
+                        //    pageHandler: null,
+                        //    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                        //    protocol: Request.Scheme);
+
+                        if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                        {
+                            return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                        }
+                        else
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            return LocalRedirect(returnUrl);
+                        }
                     }
-                    else
+                    foreach (var error in result.Errors)
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                        ModelState.AddModelError(string.Empty, error.Description);
                     }
                 }
-                foreach (var error in result.Errors)
+                else
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError(string.Empty, "الإيميل موجود يهبل");
                 }
             }
 

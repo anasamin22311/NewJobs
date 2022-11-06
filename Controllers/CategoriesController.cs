@@ -26,6 +26,7 @@ namespace Jobs.Controllers
         }
 
         // GET: Categories/Details/5
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Categories == null)
