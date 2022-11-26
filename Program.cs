@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor.Services;
 using System.Security.Cryptography.X509Certificates;
 
 public class Program
@@ -51,6 +52,7 @@ public class Program
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 
+        builder.Services.AddMudServices();
         builder.Services.AddRazorPages();
         builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
             .AddEntityFrameworkStores<ApplicationDbContext>();

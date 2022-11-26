@@ -1,4 +1,5 @@
-﻿using Jobs.Data;
+﻿using Jobs.Areas.Identity.Pages;
+using Jobs.Data;
 using Jobs.Models;
 using Jobs.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -28,17 +29,23 @@ namespace Jobs.Controllers
         [HttpGet]
         public async Task<IActionResult> Apply(int id)
         {
-            ApplytForJob = new();
-            ViewBag.id = id;
-            return View(ApplytForJob);
+            TempData["JobId"] = id;
+            return View();
         }
-        [HttpPost]
-        public async Task<IActionResult> Apply(int id, string Message)
+
+        public class ApplyModel
         {
+            public string Message { get; set; }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Apply([Bind("Message")] ApplyModel model)
+        {
+            ApplytForJob = new();
             var userId = _userManager.GetUserId(User);
             ApplytForJob.UserId = userId;
-            ApplytForJob.JobId = id;
-            ApplytForJob.Message = Message;
+            ApplytForJob.JobId = (int)TempData["JobId"];
+            ApplytForJob.Message = model.Message;
             ApplytForJob.ApplyDate = DateTime.Now;
 
             //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -62,7 +69,9 @@ namespace Jobs.Controllers
                     }
                 }
             }
-            return BadRequest();
+            TempData["JobId"] = ApplytForJob.JobId;
+            ModelState.AddModelError(string.Empty, "انت قدمت قبل كدة يعم الحج");
+            return View();
         }
         public async Task<IActionResult> GetJobsByUser()
         {

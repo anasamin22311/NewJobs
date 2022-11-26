@@ -1,4 +1,4 @@
-﻿@model Jobs.Models.ApplytForJob
+﻿@model Jobs.Controllers.ApplyForJobsController.ApplyModel
 
 @{
     ViewData["Title"] = "Apply";
@@ -13,12 +13,11 @@
         <form asp-action="Apply">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            @*<input type="hidden" asp-for="Id" value="" />*@
-            <input type="hidden" asp-for="JobId" value="@ViewBag.id" />
+            @*<input type="hidden" asp-for="@Model.JobId" value="@ViewData["jobId"]" />*@
             <div class="form-group">
-                <label asp-for="Message" class="control-label"></label>
-                <input asp-for="Message" class="form-control" />
-                <span asp-validation-for="Message" class="text-danger"></span>
+                <label asp-for="@Model.Message" class="control-label"></label>
+                <input asp-for="@Model.Message" class="form-control" />
+                <span asp-validation-for="@Model.Message" class="text-danger"></span>
             </div>
             
             <div class="form-group">
